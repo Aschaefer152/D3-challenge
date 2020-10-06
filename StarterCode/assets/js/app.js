@@ -191,14 +191,14 @@ d3.csv("data.csv").then(function(data, err) {
   if (err) throw err;
    
   // parse data - set values to numerical data types
-  hairData.forEach(function(data) {
+  data.forEach(function(data) {
     data.poverty = +data.poverty;
     data.healthcare = +data.healthcare;
     data.incomeMoe = +data.incomeMoe;
   });
 
   // Data Exploration (Section 1)
-  console.log(data)
+  console.log(data);
 
 
 
@@ -265,50 +265,50 @@ d3.csv("data.csv").then(function(data, err) {
 //         // note that the attributes are "cx" and "cy"; the data is being scaled by the scaling functions defined above; see it is a function
 //         // the centers of the circles are also coming from the specific x data group 'chosenXAxis'
 //         // append initial circles
-//         var circlesGroup = circlesGroupAll
-//             .append("circle")
-//             .attr("cx", d => xLinearScale(d[chosenXAxis]))
-//             .attr("cy", d => yLinearScale(d.num_hits))
-//             .attr("r", 20)
-//             .attr("fill", "pink")
-//             .attr("opacity", ".5");
+        var circlesGroup = circlesGroupAll
+            .append("circle")
+            .attr("cx", d => xLinearScale(d[chosenXAxis]))
+            .attr("cy", d => yLinearScale(d.healthcare))
+            .attr("r", 20)
+            .attr("fill", "pink")
+            .attr("opacity", ".5");
 
 //     // #################### 8B.  circlesGroupAll Append text Object  ###############//
 
 //         // added by Erin - I wanted to add text to the circles - probably several ways of doing this but here is one.
 //         // data is bound to ciclesGroupAll like above and now I add a text element at "x" and "y", not the difference from above.
 //         // added round function to make the numbers in the cirlces have no decimals; this is a random data selection; I just wanted something inside the circles. If you want to see why these values are like they are then you need to back-calculate what xScale and transpose is doing
-//         var textcirclesGroup = circlesGroupAll
-//             .append("text")
-//             .text((d) => Math.round(xLinearScale(d[chosenXAxis])))
-//             .attr("x", d => xLinearScale(d[chosenXAxis]))
-//             .attr("y", d => yLinearScale(d.num_hits));
+        var textcirclesGroup = circlesGroupAll
+            .append("text")
+            .text((d) => Math.round(xLinearScale(d[chosenXAxis])))
+            .attr("x", d => xLinearScale(d[chosenXAxis]))
+            .attr("y", d => yLinearScale(d.healthcare));
 
 
 // // #################### 9.  chartGroup Append labelsGroup Object  ###############//
 //   // Create group for two x-axis labels
-//   var labelsGroup = chartGroup.append("g")
-//     .attr("transform", `translate(${width / 2}, ${height + 20})`);
+  var labelsGroup = chartGroup.append("g")
+    .attr("transform", `translate(${width / 2}, ${height + 20})`);
 
 
 //     // #################### 9A.  labelsGroup Append xlabel Object  ###############//
 
-//         var hairLengthLabel = labelsGroup.append("text")
-//             .attr("x", 0)
-//             .attr("y", 20)
-//             .attr("value", "hair_length") // value to grab for event listener
-//             .classed("active", true)
-//             .text("Hair Metal Ban Hair Length (inches)");
+        var healthcareLengthLabel = labelsGroup.append("text")
+            .attr("x", 0)
+            .attr("y", 20)
+            .attr("value", "healthcare") // value to grab for event listener
+            .classed("active", true)
+            .text("");
 
 
 //     // #################### 9B.  labelsGroup Append xlabel Object  ###############//
 
-//         var albumsLabel = labelsGroup.append("text")
-//             .attr("x", 0)
-//             .attr("y", 40)
-//             .attr("value", "num_albums") // value to grab for event listener
-//             .classed("inactive", true)
-//             .text("# of Albums Released");
+        var albumsLabel = labelsGroup.append("text")
+            .attr("x", 0)
+            .attr("y", 40)
+            .attr("value", "num_albums") // value to grab for event listener
+            .classed("inactive", true)
+            .text("# of Albums Released");
 
 
 // // #################### 10.  circlesGroup/Tooltip - no clue why it is this way  ###############//
