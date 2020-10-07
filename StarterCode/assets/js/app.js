@@ -46,9 +46,8 @@
 
 // #######################  1.  Data Exploration  ################ //
 // CSV file shows that
-//  Data has following columns:  rockband, hair_length, num_hits, num_albums
 //  Once read by d3.csv then it is like an array of 20 objects as key-value pair format so I will need to use foreach or arrow functions to get arrays
-//  console.log(hairData) see below after d3.csv
+//  console.log(stateData) see below after d3.csv
 
 
 
@@ -58,11 +57,11 @@
 // #################### 2.  Define Function ###############//
 // function used for updating x-scale var upon click on axis label
 // scaling function: https://www.d3indepth.com/scales/
-function xScale(data, chosenXAxis) {
+function xScale(stateData, chosenXAxis) {
     // create scales
     var xLinearScale = d3.scaleLinear()
-      .domain([d3.min(data, d => d[chosenXAxis]) * 0.8,
-        d3.max(data, d => d[chosenXAxis]) * 1.2
+      .domain([d3.min(stateData, d => d[chosenXAxis]) * 0.8,
+        d3.max(stateData, d => d[chosenXAxis]) * 1.2
       ])
       .range([0, width]);  //width define at beginning of main code
   
@@ -121,7 +120,7 @@ function xScale(data, chosenXAxis) {
       .attr("class", "tooltip")
       .offset([80, -60])
       .html(function(d) {
-        return (`${d.poverty}<br>${label} ${d[chosenXAxis]}`);
+        return (`${d.state}<br>${label} ${d[chosenXAxis]}`);
       });
 
     //Note:  Below circlesGroup is having the tooltip added but other objects could also have the tool tip added
@@ -166,7 +165,7 @@ var height = svgHeight - margin.top - margin.bottom;
 // Create an SVG wrapper, append an SVG group that will hold our chart,
 // and shift the latter by left and top margins.
 var svg = d3
-  .select(".chart")
+  .select(".row")
   .append("svg")
   .attr("width", svgWidth)
   .attr("height", svgHeight);
@@ -187,18 +186,17 @@ var chosenXAxis = "poverty";
 
 
 // Retrieve data from the CSV file and execute everything below
-d3.csv("data.csv").then(function(data, err) {
+d3.csv("data.csv").then(function(stateData, err) {
   if (err) throw err;
    
   // parse data - set values to numerical data types
   data.forEach(function(data) {
     data.poverty = +data.poverty;
-    data.healthcare = +data.healthcare;
     data.incomeMoe = +data.incomeMoe;
   });
 
   // Data Exploration (Section 1)
-  console.log(data);
+  console.log(stateData);
 
 
 
@@ -221,7 +219,7 @@ d3.csv("data.csv").then(function(data, err) {
   // xLinearScale function above csv import; Note:  xLinearScale is a function contains scaled data specific to the defined axis
   // Important note:  xScale uses width that is defined above; xScale can only be called below width in the code
   // scaling function: https://www.d3indepth.com/scales/
-  var xLinearScale = xScale(data, chosenXAxis);
+  var xLinearScale = xScale(stateData, chosenXAxis);
   // Create initial axis functions; generates the scaled axis
   var bottomAxis = d3.axisBottom(xLinearScale);
   // append x axis; adds x axis chart data tick marks to chartgroup
@@ -236,7 +234,7 @@ d3.csv("data.csv").then(function(data, err) {
 
   // Create y scale function
   var yLinearScale = d3.scaleLinear()
-    .domain([0, d3.max(data, d => d.healthcare)])
+    .domain([0, d3.max(stateData, d => d.healthcare)])
     .range([height, 0]);
   // Create initial axis functions; sets pixel location for data scale
   var leftAxis = d3.axisLeft(yLinearScale);
@@ -254,7 +252,7 @@ d3.csv("data.csv").then(function(data, err) {
   // case is important - selectAll() works but SelectAll() would produce a type error - the capitalizaton makes a difference
   var circlesGroupAll = chartGroup
       .selectAll("circlesGroup")
-      .data(data)
+      .data(stateData)
       .enter()
     
   
@@ -298,7 +296,7 @@ d3.csv("data.csv").then(function(data, err) {
             .attr("y", 20)
             .attr("value", "healthcare") // value to grab for event listener
             .classed("active", true)
-            .text("");
+            .text("In Poverty (%)");
 
 
 //     // #################### 9B.  labelsGroup Append xlabel Object  ###############//
@@ -306,15 +304,15 @@ d3.csv("data.csv").then(function(data, err) {
         var albumsLabel = labelsGroup.append("text")
             .attr("x", 0)
             .attr("y", 40)
-            .attr("value", "num_albums") // value to grab for event listener
+            .attr("value", "incomeMoe") // value to grab for event listener
             .classed("inactive", true)
-            .text("# of Albums Released");
+            .text("Household Income (Median)");
 
 
-// // #################### 10.  circlesGroup/Tooltip - no clue why it is this way  ###############//
-//   // updateToolTip function above csv import
-//   var circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
-//   var textcirclesGroup = updateToolTip(chosenXAxis, textcirclesGroup)
+// #################### 10.  circlesGroup/Tooltip - no clue why it is this way  ###############//
+  // updateToolTip function above csv import
+  var circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
+  var textcirclesGroup = updateToolTip(chosenXAxis, textcirclesGroup)
 
 
 
@@ -322,55 +320,55 @@ d3.csv("data.csv").then(function(data, err) {
 
 // // #################### 11.  ADD updates upon clicking axis text  ###############//
 
-//   // x axis labels event listener
-//   // if you comment out the entire labelsGroup section then you can see that the plot populates but does not update when selecting the axis
-//   // note that above this section, only the updateToolTip and xScale functions are called of all the user created functions at the top of the script
-//   // the other functions at the top of the page are used to re-define the data applied to the xLinearScale function, xAxis object, circlesGroup object, textcirclesGroup object, circlesGroup object
-//   labelsGroup.selectAll("text")
-//     .on("click", function() {
-//       // get value of selection
-//       var value = d3.select(this).attr("value");
-//       if (value !== chosenXAxis) {
+  // x axis labels event listener
+  // if you comment out the entire labelsGroup section then you can see that the plot populates but does not update when selecting the axis
+  // note that above this section, only the updateToolTip and xScale functions are called of all the user created functions at the top of the script
+  // the other functions at the top of the page are used to re-define the data applied to the xLinearScale function, xAxis object, circlesGroup object, textcirclesGroup object, circlesGroup object
+  labelsGroup.selectAll("text")
+    .on("click", function() {
+      // get value of selection
+      var value = d3.select(this).attr("value");
+      if (value !== chosenXAxis) {
 
-//         // replaces chosenXAxis with value
-//         chosenXAxis = value;
+        // replaces chosenXAxis with value
+        chosenXAxis = value;
 
-//         // console.log(chosenXAxis)
+        console.log(chosenXAxis)
 
-//         // functions here found above csv import
-//         // updates x scale for new data
-//         xLinearScale = xScale(hairData, chosenXAxis);
+        // functions here found above csv import
+        // updates x scale for new data
+        xLinearScale = xScale(stateData, chosenXAxis);
 
-//         // updates x axis with transition
-//         xAxis = renderAxes(xLinearScale, xAxis);
+        // updates x axis with transition
+        xAxis = renderAxes(xLinearScale, xAxis);
 
-//         // updates circles with new x values
-//         circlesGroup = renderCircles(circlesGroup, xLinearScale, chosenXAxis);
-//         // New - updates text labels within circles
-//         textcirclesGroup = rendertextCircles(textcirclesGroup, xLinearScale, chosenXAxis);
-//         // updates tooltips with new info
-//         circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
-//         textcirclesGroup = updateToolTip(chosenXAxis, textcirclesGroup)
+        // updates circles with new x values
+        circlesGroup = renderCircles(circlesGroup, xLinearScale, chosenXAxis);
+        // New - updates text labels within circles
+        textcirclesGroup = rendertextCircles(textcirclesGroup, xLinearScale, chosenXAxis);
+        // updates tooltips with new info
+        circlesGroup = updateToolTip(chosenXAxis, circlesGroup);
+        textcirclesGroup = updateToolTip(chosenXAxis, textcirclesGroup)
 
-//         // changes classes to change bold text
-//         if (chosenXAxis === "num_albums") {
-//           albumsLabel
-//             .classed("active", true)
-//             .classed("inactive", false);
-//           hairLengthLabel
-//             .classed("active", false)
-//             .classed("inactive", true);
-//         }
-//         else {
-//           albumsLabel
-//             .classed("active", false)
-//             .classed("inactive", true);
-//           hairLengthLabel
-//             .classed("active", true)
-//             .classed("inactive", false);
-//         }
-//       }
-//     });
-// }).catch(function(error) {
-//   console.log(error);
+        // changes classes to change bold text
+        if (chosenXAxis === "poverty") {
+          albumsLabel
+            .classed("active", true)
+            .classed("inactive", false);
+          hairLengthLabel
+            .classed("active", false)
+            .classed("inactive", true);
+        }
+        else {
+          albumsLabel
+            .classed("active", false)
+            .classed("inactive", true);
+          hairLengthLabel
+            .classed("active", true)
+            .classed("inactive", false);
+        }
+      }
+    });
+}).catch(function(error) {
+  console.log(error);
 });
